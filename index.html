@@ -327,14 +327,6 @@ const TOTAL_CELDAS = COLS * ROWS; // 12
 const TOTAL_CARTONES = 50;
 
 // Semilla por nombre para cartón único y consistente
-function hashNombre(str) {
-  let h = 5381;
-  for (let i = 0; i < str.length; i++) {
-    h = ((h << 5) + h) ^ str.charCodeAt(i);
-    h = h & 0xffffffff;
-  }
-  return (Math.abs(h) % TOTAL_CARTONES) + 1;
-}
 
 function seededShuffle(arr, seed) {
   const a = [...arr];
@@ -347,8 +339,18 @@ function seededShuffle(arr, seed) {
   return a;
 }
 
-function generarCarton(num) {
-  return seededShuffle(CANCIONES, num * 7919).slice(0, TOTAL_CELDAS);
+function strToSeed(str) {
+  let h = 5381;
+  for (let i = 0; i < str.length; i++) {
+    h = ((h << 5) + h) ^ str.charCodeAt(i);
+    h = h & 0xffffffff;
+  }
+  return Math.abs(h);
+}
+
+function generarCarton(nombre) {
+  const seed = strToSeed(nombre.toLowerCase().trim());
+  return seededShuffle(CANCIONES, seed).slice(0, TOTAL_CELDAS);
 }
 
 // Líneas ganadoras para grilla 3x4
@@ -372,7 +374,7 @@ document.getElementById("input-nombre").addEventListener("input", () => {
 
 function iniciarJuego() {
   nombreJugador = document.getElementById("input-nombre").value.trim();
-  cartonNum = hashNombre(nombreJugador.toLowerCase());
+  cartonNum = strToSeed(nombreJugador.toLowerCase().trim()) % TOTAL_CARTONES + 1;
   marcadas = new Set();
   bingoCelebrado = false;
 
@@ -380,7 +382,7 @@ function iniciarJuego() {
   document.getElementById("display-carton").textContent = "Cartón N° " + cartonNum;
   actualizarProgreso();
 
-  const canciones = generarCarton(cartonNum);
+  const canciones = generarCarton(nombreJugador);
   const grid = document.getElementById("bingo-grid");
   grid.innerHTML = "";
   celdas = [];
