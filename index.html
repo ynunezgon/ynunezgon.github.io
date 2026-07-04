@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Bingo Musical — Baby Shower Natalia 🦒</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    min-height: 100%;
+    font-family: 'Nunito', sans-serif;
+    color: #2a3a2e;
+  }
+
+  body {
+    background: linear-gradient(160deg, #6ecfb0 0%, #4aae90 40%, #3a9e80 100%);
+    background-attachment: fixed;
+    padding: 0;
+  }
+
+  /* ===== BIENVENIDA ===== */
+  #screen-welcome {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 20px;
+  }
+
+  .welcome-card {
+    background: rgba(255,255,255,0.22);
+    border: 2.5px solid rgba(255,255,255,0.5);
+    border-radius: 28px;
+    padding: 36px 24px 32px;
+    text-align: center;
+    width: 100%;
+    max-width: 380px;
+  }
+
+  .animals { font-size: 2.4rem; letter-spacing: 8px; margin-bottom: 14px; }
+
+  .welcome-card h1 {
+    font-family: 'Fredoka One', cursive;
+    font-size: 2.2rem;
+    color: white;
+    text-shadow: 0 3px 0 rgba(40,120,80,0.4);
+    margin-bottom: 4px;
+  }
+  .name-box {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.6rem;
+    color: white;
+    background: rgba(255,255,255,0.22);
+    border: 2px solid rgba(255,255,255,0.5);
+    border-radius: 14px;
+    display: inline-block;
+    padding: 4px 20px;
+    margin: 8px 0 16px;
+    letter-spacing: 3px;
+  }
+  .welcome-card .subtitle {
+    color: rgba(255,255,255,0.85);
+    font-size: 13px;
+    margin-bottom: 26px;
+    line-height: 1.55;
+  }
+
+  .field-label {
+    color: rgba(255,255,255,0.9);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-align: left;
+    margin-bottom: 6px;
+  }
+
+  input[type="text"] {
+    width: 100%;
+    padding: 13px 16px;
+    border-radius: 14px;
+    border: 2px solid rgba(255,255,255,0.5);
+    background: rgba(255,255,255,0.9);
+    font-family: 'Nunito', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #2a3a2e;
+    outline: none;
+    margin-bottom: 8px;
+  }
+  input[type="text"]:focus { border-color: white; background: white; }
+  input[type="text"]::placeholder { color: #aac8b8; font-weight: 400; }
+
+  .assign-note {
+    color: rgba(255,255,255,0.78);
+    font-size: 12px;
+    margin-bottom: 22px;
+    line-height: 1.5;
+  }
+
+  .btn-jugar {
+    width: 100%;
+    background: white;
+    color: #3a9e80;
+    border: none;
+    padding: 15px;
+    border-radius: 16px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.3rem;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    transition: transform 0.1s;
+  }
+  .btn-jugar:hover { transform: scale(1.02); }
+  .btn-jugar:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  /* ===== JUEGO ===== */
+  #screen-game { display: none; min-height: 100vh; padding: 16px 14px 32px; }
+
+  .game-header {
+    background: rgba(255,255,255,0.22);
+    border: 2px solid rgba(255,255,255,0.45);
+    border-radius: 18px;
+    padding: 14px 18px;
+    text-align: center;
+    margin-bottom: 12px;
+  }
+  .player-name {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.6rem;
+    color: white;
+    text-shadow: 0 2px 0 rgba(40,120,80,0.4);
+    line-height: 1.2;
+  }
+  .carton-num {
+    font-size: 11px;
+    color: rgba(255,255,255,0.72);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+  .progress {
+    margin-top: 6px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.8);
+  }
+
+  .instruccion {
+    background: rgba(255,255,255,0.18);
+    border: 1.5px solid rgba(255,255,255,0.32);
+    border-radius: 12px;
+    padding: 10px 14px;
+    text-align: center;
+    font-size: 12px;
+    color: rgba(255,255,255,0.9);
+    margin-bottom: 14px;
+    line-height: 1.5;
+  }
+
+  /* GRILLA 3x4 */
+  .bingo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 14px;
+    max-width: 380px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .cell {
+    aspect-ratio: 1 / 0.9;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.88);
+    border: 2px solid rgba(255,255,255,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 800;
+    color: #2c6e4a;
+    padding: 8px 6px;
+    line-height: 1.25;
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .cell:active { transform: scale(0.92); }
+  .cell.marked {
+    background: linear-gradient(135deg, #4aae90, #2c7a5a);
+    color: white;
+    border-color: rgba(255,255,255,0.6);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+  }
+  .cell.bingo-line {
+    background: linear-gradient(135deg, #ff9a3c, #e07020);
+    color: white;
+    border-color: white;
+    box-shadow: 0 0 14px rgba(255,154,60,0.7);
+    animation: pulse 0.5s ease infinite alternate;
+  }
+  @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.06); } }
+
+  /* BINGO OVERLAY */
+  #bingo-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.65);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  #bingo-overlay.show { display: flex; }
+
+  .bingo-box {
+    background: linear-gradient(135deg, #6ecfb0, #2c5f8a);
+    border: 3px solid white;
+    border-radius: 28px;
+    padding: 40px 32px;
+    max-width: 320px;
+    width: 100%;
+    text-align: center;
+  }
+  .bingo-emoji { font-size: 4rem; margin-bottom: 10px; }
+  .bingo-box h2 {
+    font-family: 'Fredoka One', cursive;
+    font-size: 3rem;
+    color: #f5d76e;
+    text-shadow: 0 3px 0 rgba(0,0,0,0.2);
+    margin-bottom: 8px;
+  }
+  .bingo-box p { color: white; font-size: 15px; line-height: 1.5; margin-bottom: 20px; }
+  .btn-cerrar {
+    background: white;
+    color: #2c6e4a;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 30px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.1rem;
+    cursor: pointer;
+  }
+
+  .btn-volver {
+    display: block;
+    width: 100%;
+    max-width: 380px;
+    margin: 0 auto;
+    background: rgba(255,255,255,0.2);
+    border: 2px solid rgba(255,255,255,0.4);
+    color: white;
+    padding: 12px;
+    border-radius: 14px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<!-- BIENVENIDA -->
+<div id="screen-welcome">
+  <div class="welcome-card">
+    <div class="animals">🦒 🎵 🦁</div>
+    <h1>Bingo Musical</h1>
+    <div class="name-box">NATALIA</div>
+    <p class="subtitle">Escuchá la canción, encontrala en tu cartón y tachala 🎵<br>Primera en completar una fila gana</p>
+
+    <div class="field-label">Tu nombre</div>
+    <input type="text" id="input-nombre" placeholder="Escribí tu nombre..." maxlength="30" />
+    <p class="assign-note">Se te asigna un cartón único automáticamente 🎲</p>
+
+    <button class="btn-jugar" id="btn-jugar" onclick="iniciarJuego()" disabled>🎵 ¡A jugar!</button>
+  </div>
+</div>
+
+<!-- JUEGO -->
+<div id="screen-game">
+  <div class="game-header">
+    <div class="player-name" id="display-nombre">—</div>
+    <div class="carton-num" id="display-carton">Cartón N° —</div>
+    <div class="progress" id="display-progress">0 / 12 tachadas</div>
+  </div>
+
+  <div class="instruccion">
+    🎵 Escuchá · Encontrá · ¡Tachá!<br>
+    Completá una fila o columna para ganar
+  </div>
+
+  <div class="bingo-grid" id="bingo-grid"></div>
+
+  <button class="btn-volver" onclick="volver()">← Cambiar nombre</button>
+</div>
+
+<!-- BINGO OVERLAY -->
+<div id="bingo-overlay">
+  <div class="bingo-box">
+    <div class="bingo-emoji">🎉</div>
+    <h2>¡BINGO!</h2>
+    <p id="bingo-msg">¡Completaste una fila!<br>¡Gritá BINGO ahora mismo!</p>
+    <button class="btn-cerrar" onclick="cerrarBingo()">¡Lo grité! 🎤</button>
+  </div>
+</div>
+
+<script>
+const CANCIONES = [
+  "Arroz con leche", "Estrellita ¿dónde estás?", "Pin Pon", "La vaca Lola",
+  "Los pollitos", "Sapito sapito", "A la rorro niño", "El cocherito leré",
+  "Naranja dulce", "Debajo de un botón", "Luna lunera", "Señora Santa Ana",
+  "El tren chiquitito", "Palmas palmitas", "Diez perritos", "Tengo tengo tengo",
+  "Buen día señor sol", "El barquito de papel", "Manitas a lavarse",
+  "Mi cuerpo hace música", "A dormir", "El pato Donald", "Duérmete mi niño",
+  "El lobo feroz", "Cumpleaños feliz"
+];
+
+const COLS = 3;
+const ROWS = 4;
+const TOTAL_CELDAS = COLS * ROWS; // 12
+const TOTAL_CARTONES = 50;
+
+// Semilla por nombre para cartón único y consistente
+function hashNombre(str) {
+  let h = 5381;
+  for (let i = 0; i < str.length; i++) {
+    h = ((h << 5) + h) ^ str.charCodeAt(i);
+    h = h & 0xffffffff;
+  }
+  return (Math.abs(h) % TOTAL_CARTONES) + 1;
+}
+
+function seededShuffle(arr, seed) {
+  const a = [...arr];
+  let s = seed;
+  for (let i = a.length - 1; i > 0; i--) {
+    s = (s * 1664525 + 1013904223) & 0xffffffff;
+    const j = Math.abs(s) % (i + 1);
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function generarCarton(num) {
+  return seededShuffle(CANCIONES, num * 7919).slice(0, TOTAL_CELDAS);
+}
+
+// Líneas ganadoras para grilla 3x4
+// Filas: [0,1,2], [3,4,5], [6,7,8], [9,10,11]
+// Columnas: [0,3,6,9], [1,4,7,10], [2,5,8,11]
+const LINEAS = [
+  [0,1,2], [3,4,5], [6,7,8], [9,10,11],         // filas
+  [0,3,6,9], [1,4,7,10], [2,5,8,11]             // columnas
+];
+
+let nombreJugador = "";
+let cartonNum = null;
+let marcadas = new Set();
+let celdas = [];
+let bingoCelebrado = false;
+
+document.getElementById("input-nombre").addEventListener("input", () => {
+  const v = document.getElementById("input-nombre").value.trim();
+  document.getElementById("btn-jugar").disabled = !v;
+});
+
+function iniciarJuego() {
+  nombreJugador = document.getElementById("input-nombre").value.trim();
+  cartonNum = hashNombre(nombreJugador.toLowerCase());
+  marcadas = new Set();
+  bingoCelebrado = false;
+
+  document.getElementById("display-nombre").textContent = "🎵 " + nombreJugador;
+  document.getElementById("display-carton").textContent = "Cartón N° " + cartonNum;
+  actualizarProgreso();
+
+  const canciones = generarCarton(cartonNum);
+  const grid = document.getElementById("bingo-grid");
+  grid.innerHTML = "";
+  celdas = [];
+
+  canciones.forEach((c, i) => {
+    const cell = document.createElement("div");
+    cell.className = "cell";
+    cell.textContent = c;
+    cell.onclick = () => toggleCell(i, cell);
+    grid.appendChild(cell);
+    celdas.push(cell);
+  });
+
+  document.getElementById("screen-welcome").style.display = "none";
+  document.getElementById("screen-game").style.display = "block";
+  window.scrollTo(0, 0);
+}
+
+function toggleCell(idx, cell) {
+  if (marcadas.has(idx)) {
+    marcadas.delete(idx);
+    cell.classList.remove("marked");
+  } else {
+    marcadas.add(idx);
+    cell.classList.add("marked");
+    actualizarProgreso();
+    verificarBingo();
+  }
+}
+
+function actualizarProgreso() {
+  document.getElementById("display-progress").textContent = marcadas.size + " / " + TOTAL_CELDAS + " tachadas";
+}
+
+function verificarBingo() {
+  if (bingoCelebrado) return;
+  for (const linea of LINEAS) {
+    if (linea.every(i => marcadas.has(i))) {
+      bingoCelebrado = true;
+      linea.forEach(i => celdas[i].classList.add("bingo-line"));
+      document.getElementById("bingo-msg").textContent =
+        "¡" + nombreJugador + ", completaste una fila!\n¡Gritá BINGO ahora mismo! 🎤";
+      setTimeout(() => {
+        document.getElementById("bingo-overlay").classList.add("show");
+      }, 400);
+      return;
+    }
+  }
+}
+
+function cerrarBingo() {
+  document.getElementById("bingo-overlay").classList.remove("show");
+}
+
+function volver() {
+  document.getElementById("screen-game").style.display = "none";
+  document.getElementById("screen-welcome").style.display = "flex";
+  window.scrollTo(0, 0);
+}
+</script>
+</body>
+</html>
